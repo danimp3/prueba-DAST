@@ -1,4 +1,4 @@
-name: DAST Scan
+name: ZAP Scan
 
 on:
   push:
@@ -7,18 +7,37 @@ on:
 
 jobs:
   zap_scan:
+    name: Ejecutar ZAP Scan completo
     runs-on: ubuntu-latest
 
     steps:
-      - name: Instalar OWASP ZAP
-        run: sudo apt-get update && sudo apt-get install zaproxy -y
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
 
-      - name: Ejecutar escaneo con OWASP ZAP
+      - name: Iniciar contenedor de la aplicación
         run: |
-          zaproxy -cmd -autorun zap_scan.yaml
+          docker run -d --name myapp -p 3000:3000 mi-imagen:latest
+      - name: Esperar a que la aplicación esté lista
+        run: |
+          npx wait-on http://localhost:3000
 
-      - name: Guardar el reporte como artefacto
-        uses: actions/upload-artifact@v3
+      - name: ZAP Spider
+        uses: zaproxy/action-spider@v1
         with:
-          name: ZAP-Report
-          path: zap_report.html
+          target: http://localhost:3000
+          max-duration: 2
+
+      - name: ZAP Active Scan
+        uses: zaproxy/action-active-scan@v1
+        with:
+          target: http://localhost:3000
+          recurse: true
+          max-duration: 5
+
+      - name: Generar reporte HTML
+        uses: zaproxy/action-report@v1
+        with:
+          format: traditional-html
+          filename: zap_report.html
+          title: "ZAP Scan Report"
+
