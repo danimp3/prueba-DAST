@@ -4,53 +4,21 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
 
-    # Todas las acciones `run:` se ejecutan dentro de ./prueba-DAST
-    defaults:
-      run:
-        working-directory: ./prueba-DAST
-
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Instalar dependencias
-        run: npm install
-
-      - name: Iniciar la aplicación
-        run: npm run start &
-
-      - name: Esperar a que la app esté lista
-        run: |
-          for i in {1..30}; do
-            if curl --silent --fail http://localhost:3000; then
-              echo "App arriba 🎉"
-              exit 0
-            fi
-            echo "Esperando… ($i/30)"
-            sleep 2
-          done
-          echo "La app no arrancó en 60s." >&2
-          exit 1
-
       - name: Instalar OWASP ZAP
         run: sudo apt-get update && sudo apt-get install zaproxy -y
 
       - name: Ejecutar escaneo con OWASP ZAP
-        run: zaproxy -cmd -autorun zap_scan.yaml
+        run: |
+          zaproxy -cmd -autorun zap_scan.yaml
 
-      - name: Subir reporte como artefacto
-        uses: actions/upload-artifact@v4
+      - name: Guardar el reporte como artefacto
+        uses: actions/upload-artifact@v3
         with:
           name: ZAP-Report
           path: zap_report.html
