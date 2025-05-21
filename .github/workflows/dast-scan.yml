@@ -10,6 +10,11 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
 
+    # Todas las acciones `run:` se ejecutan dentro de ./prueba-DAST
+    defaults:
+      run:
+        working-directory: ./prueba-DAST
+
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
