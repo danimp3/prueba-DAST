@@ -1,27 +1,15 @@
-name: DAST Security Scan
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
-  zap-dast-scan:
-    name: OWASP ZAP Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: Run OWASP ZAP Scan
-        uses: docker://owasp/zap2docker-stable
-        with:
-          args: zap-baseline.py -t http://localhost:3000 -g gen.conf -r zap_report.html
-          
-      - name: Upload Security Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-security-scan
-          path: zap_report.html
+  - type: spider
+    parameters:
+      url: "http://localhost:3000"
+      maxDuration: 2
+  - type: activeScan
+    parameters:
+      url: "http://localhost:3000"
+      recurse: true
+      maxDuration: 5
+  - type: report
+    parameters:
+      template: traditional-html
+      reportFile: zap_report.html
+      reportTitle: "ZAP Scan Report"
