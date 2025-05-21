@@ -2,23 +2,26 @@ name: DAST Scan
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Instalar OWASP ZAP
-        run: sudo apt-get update && sudo apt-get install zaproxy -y
+      - uses: actions/checkout@v4
 
-      - name: Ejecutar escaneo con OWASP ZAP
-        run: |
-          zaproxy -cmd -autorun zap_scan.yaml
+      - name: Ejecutar escaneo ZAP completo
+        uses: zaproxy/action-full-scan@v0.4.0
+        with:
+          # URL a escanear (puede ser un servicio que hayas desplegado en el workflow)
+          target: 'http://localhost:3030'
+          # Nivel de riesgo mínimo (e.g. Low, Medium, High)
+          risk: 'Medium'
+          # Nivel de confianza mínimo (e.g. Low, Medium, High)
+          confidence: 'Medium'
 
-      - name: Guardar el reporte como artefacto
+      - name: Guardar reporte
         uses: actions/upload-artifact@v4
         with:
           name: ZAP-Report
-          path: zap_report.html
+          path: ./zap_report.html
