@@ -18,7 +18,7 @@ jobs:
           zaproxy -cmd -autorun zap_scan.yaml
 
       - name: Guardar el reporte como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ZAP-Report
           path: zap_report.html
