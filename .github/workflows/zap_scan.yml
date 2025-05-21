@@ -3,20 +3,42 @@ name: DAST Scan
 on:
   push:
     branches:
-      - main  
+      - main
+
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+    services:
+      app:
+        image: node:18   # o la imagen que use tu stack
+        ports:
+          - 3000:3000
+        options: >-
+          --health-cmd="curl --fail http://localhost:3000 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        steps:
+          - name: Instalar dependencias y arrancar la app
+            run: |
+              npm ci
+              npm run start &   # o el comando que inicie tu servidor
 
     steps:
-      - name: Instalar OWASP ZAP
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Esperar a que la aplicación esté lista
+        run: sleep 30
+
+      - name: Instalar OWASP ZAP CLI
         run: sudo apt-get update && sudo apt-get install zaproxy -y
 
       - name: Ejecutar escaneo con OWASP ZAP
         run: |
           zaproxy -cmd -autorun zap_scan.yaml
 
-      - name: Guardar el reporte como artefacto
+      - name: Subir reporte HTML como artefacto
         uses: actions/upload-artifact@v3
         with:
           name: ZAP-Report
