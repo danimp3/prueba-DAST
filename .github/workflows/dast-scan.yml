@@ -13,13 +13,13 @@ jobs:
       - name: Escaneo OWASP ZAP Full
         uses: zaproxy/action-full-scan@v0.12.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}        # para abrir issues si quieres
-          target: 'http://localhost:3030'           # tu aplicación corriendo
-          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'  # tira de GHCR en vez de Docker Hub :contentReference[oaicite:0]{index=0}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:3030'        
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
           cmd_options: >
             -config scanner.attackStrengthDefault=LOW
             -config scanner.alertThresholdDefault=MEDIUM
-          artifact_name: 'ZAP-Report'               # nombre con el que sube el reporte
+          artifact_name: 'ZAP-Report'
 
       - name: Subir artefacto con el reporte
         uses: actions/upload-artifact@v4
