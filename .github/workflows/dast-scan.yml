@@ -40,7 +40,7 @@ jobs:
         run: zaproxy -cmd -autorun zap_scan.yaml
 
       - name: Subir reporte como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ZAP-Report     # nombre del artefacto
           path: zap_report.html  # ruta al fichero generado
