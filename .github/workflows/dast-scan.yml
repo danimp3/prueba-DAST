@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+
     services:
       app:
-        image: node:18   # o la imagen que use tu stack
+        image: node:18
         ports:
           - 3000:3000
         options: >-
@@ -18,27 +20,26 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-        steps:
-          - name: Instalar dependencias y arrancar la app
-            run: |
-              npm ci
-              npm run start &   # o el comando que inicie tu servidor
 
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v3
 
+      - name: Instalar dependencias y arrancar la app
+        run: |
+          npm ci
+          npm run start &
+
       - name: Esperar a que la aplicación esté lista
         run: sleep 30
 
-      - name: Instalar OWASP ZAP CLI
+      - name: Instalar OWASP ZAP
         run: sudo apt-get update && sudo apt-get install zaproxy -y
 
       - name: Ejecutar escaneo con OWASP ZAP
-        run: |
-          zaproxy -cmd -autorun zap_scan.yaml
+        run: zaproxy -cmd -autorun zap_scan.yaml
 
-      - name: Subir reporte HTML como artefacto
+      - name: Subir reporte como artefacto
         uses: actions/upload-artifact@v3
         with:
           name: ZAP-Report
