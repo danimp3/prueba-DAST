@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout del repositorio
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar dependencias y arrancar la app
         run: |
