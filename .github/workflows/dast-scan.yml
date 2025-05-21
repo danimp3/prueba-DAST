@@ -42,5 +42,5 @@ jobs:
       - name: Subir reporte como artefacto
         uses: actions/upload-artifact@v3
         with:
-          name: ZAP-Report
-          path: zap_report.html
+          name: ZAP-Report     # nombre del artefacto
+          path: zap_report.html  # ruta al fichero generado
