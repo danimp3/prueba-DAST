@@ -1,15 +1,18 @@
 jobs:
-- type: spider
-parameters:
-url: "http://localhost:3000"
-maxDuration: 2
-- type: activeScan
-parameters:
-url: "http://localhost:3000"
-recurse: true
-maxDuration: 5
-- type: report
-parameters:
-template: traditional-html
-reportFile: zap_report.html
-reportTitle: "ZAP Scan Report"
+  spider:
+    runs-on: ubuntu-latest
+    steps:
+      … # spider
+
+  active_scan:
+    runs-on: ubuntu-latest
+    needs: spider
+    steps:
+      … # active scan
+
+  report:
+    runs-on: ubuntu-latest
+    needs: [spider, active_scan]
+    steps:
+      … # report
+
