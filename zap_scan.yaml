@@ -13,3 +13,4 @@ obs:
       template: traditional-html
       reportFile: zap_report.html
       reportTitle: "ZAP Scan Report"
+
